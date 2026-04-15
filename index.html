@@ -39,15 +39,16 @@
             font-family: 'Noto Naskh Arabic', sans-serif;
             background-color: var(--bg-1); color: var(--text);
             line-height: 1.5; overflow-x: hidden;
+            background-attachment: fixed;
+            transition: background-image 1s ease, background-color 0.3s ease;
         }
         
         .hidden { display: none !important; }
 
-        /* Background Effects */
-        .bg-layer { position: fixed; inset: 0; z-index: -1; pointer-events: none; transition: background 1s ease; }
-        body[data-tod="morning"] .bg-layer { background: radial-gradient(circle at 85% 10%, rgba(251, 191, 36, 0.1) 0%, transparent 45%), radial-gradient(circle at 15% 50%, rgba(56, 189, 248, 0.05) 0%, transparent 55%); }
-        body[data-tod="evening"] .bg-layer { background: radial-gradient(circle at 85% 20%, rgba(249, 115, 22, 0.1) 0%, transparent 45%), radial-gradient(circle at 15% 60%, rgba(139, 92, 246, 0.05) 0%, transparent 55%); }
-        body[data-tod="sleep"] .bg-layer { background: radial-gradient(circle at 80% 15%, rgba(255, 255, 255, 0.03) 0%, transparent 35%), radial-gradient(1px 1px at 15% 25%, #fff, transparent), radial-gradient(1px 1px at 85% 45%, #fff, transparent); }
+        /* Background Effects - Fixed Layering */
+        body[data-tod="morning"] { background-image: radial-gradient(circle at 85% 10%, rgba(251, 191, 36, 0.15) 0%, transparent 45%), radial-gradient(circle at 15% 50%, rgba(56, 189, 248, 0.08) 0%, transparent 55%); }
+        body[data-tod="evening"] { background-image: radial-gradient(circle at 85% 20%, rgba(249, 115, 22, 0.15) 0%, transparent 45%), radial-gradient(circle at 15% 60%, rgba(139, 92, 246, 0.08) 0%, transparent 55%); }
+        body[data-tod="sleep"] { background-image: radial-gradient(circle at 80% 15%, rgba(255, 255, 255, 0.05) 0%, transparent 35%), radial-gradient(1px 1px at 15% 25%, #fff, transparent), radial-gradient(1px 1px at 85% 45%, #fff, transparent), radial-gradient(2px 2px at 30% 70%, #fff, transparent), radial-gradient(1px 1px at 70% 85%, #fff, transparent); }
 
         /* Top Bar & Prayer Times */
         .top-bar {
@@ -182,11 +183,18 @@
         /* Completion */
         .azkar-completion { text-align: center; padding: 4rem 1rem; }
         .btn-primary { background: var(--gold); color: #000; border: none; padding: 0.8rem 2rem; border-radius: 100px; font-weight: bold; font-family: inherit; cursor: pointer; font-size: 1rem; margin-top: 1rem; display: inline-flex; gap: 8px; align-items: center;}
+        
+        /* Toast Notifications */
+        .toast-container { position: fixed; top: 130px; left: 50%; transform: translateX(-50%); z-index: 999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; width: 90%; max-width: 400px; }
+        .toast { background: var(--surface); color: var(--text); border: 1px solid var(--border); padding: 14px 20px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); font-family: 'Noto Naskh Arabic', serif; display: flex; align-items: center; gap: 12px; animation: slideDown 0.4s ease forwards; direction: rtl; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px) scale(0.95); } }
     </style>
 </head>
 <body data-tod="morning">
 
-<div class="bg-layer"></div>
+<!-- In-App Notification Container -->
+<div id="toast-container" class="toast-container"></div>
 
 <!-- FIXED TOP BAR -->
 <header class="top-bar">
@@ -301,10 +309,6 @@
         </div>
     </div>
 
-    <div class="settings-row">
-        <span>التشغيل التلقائي للصوت (Auto-Play)</span>
-        <label class="toggle-switch"><input type="checkbox" id="set-auto" onchange="toggleSetting('autoPlay', this.checked)"><span class="slider"></span></label>
-    </div>
     <div class="settings-row">
         <span>إظهار الترجمة (Translation)</span>
         <label class="toggle-switch"><input type="checkbox" id="set-trans" onchange="toggleSetting('showTranslation', this.checked)"><span class="slider"></span></label>
@@ -425,7 +429,7 @@ const AZKAR_DATA = {
 };
 
 let appSettings = JSON.parse(localStorage.getItem('azkar_settings')) || {
-    showTranslation: true, showTashkeel: true, enableHaptics: true, notifications: false, autoPlay: false
+    showTranslation: true, showTashkeel: true, enableHaptics: true, notifications: false
 };
 
 let stats = JSON.parse(localStorage.getItem('azkar_stats')) || { streak: 0, lastDate: null, totalCompleted: 0, todayCompleted: 0, todayDate: null };
@@ -433,7 +437,6 @@ let stats = JSON.parse(localStorage.getItem('azkar_stats')) || { streak: 0, last
 let azkarCurrentCat = 'morning';
 let currentSearchQuery = '';
 let favorites = new Set(JSON.parse(localStorage.getItem('azkar_favs')) || []);
-let currentPlayingId = null;
 
 // ======================== APP LOGIC ========================
 
@@ -441,7 +444,6 @@ let currentPlayingId = null;
 function toggleSetting(key, value) {
     appSettings[key] = value;
     localStorage.setItem('azkar_settings', JSON.stringify(appSettings));
-    if (key === 'autoPlay' && !value) window.speechSynthesis.cancel();
     renderAzkar(azkarCurrentCat); 
 }
 
@@ -450,7 +452,6 @@ function initSettingsUI() {
     document.getElementById('set-tash').checked = appSettings.showTashkeel;
     document.getElementById('set-hap').checked = appSettings.enableHaptics;
     document.getElementById('set-notif').checked = appSettings.notifications;
-    document.getElementById('set-auto').checked = appSettings.autoPlay;
     
     // Font
     let fs = parseFloat(localStorage.getItem('mizan_font_size')) || 1.2;
@@ -531,63 +532,9 @@ function calculateNextPrayer() {
     document.getElementById('prayer-display').innerHTML = `الصلاة القادمة: <span class="prayer-live">${nextP.name} ${nextP.time}</span>`;
 }
 
-// Tools (Audio, Share, Favorite, Haptics, Tashkeel)
+// Tools (Share, Favorite, Haptics, Tashkeel)
 function removeTashkeel(text) {
     return text.replace(/[\u064B-\u065F\u0670]/g, '');
-}
-
-function playAudio(text, id) {
-    if (!('speechSynthesis' in window)) return alert('ميزة الصوت غير مدعومة في متصفحك.');
-    window.speechSynthesis.cancel(); // Stop current
-    
-    // If clicking the same playing Zikr, stop it
-    if (currentPlayingId === id) {
-        currentPlayingId = null;
-        renderAzkar(azkarCurrentCat); 
-        return;
-    }
-
-    currentPlayingId = id;
-    renderAzkar(azkarCurrentCat); 
-
-    const cleanText = removeTashkeel(text); 
-    const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.lang = 'ar-SA';
-    utterance.rate = 0.85; 
-    
-    utterance.onend = () => {
-        if (appSettings.autoPlay && currentPlayingId === id) {
-            let p = loadProgress(azkarCurrentCat);
-            let zList = getZikrData(azkarCurrentCat);
-            let z = zList.find(x => x.id === id);
-            if (!z) return;
-
-            let currentCount = p[id] !== undefined ? p[id] : z.count;
-
-            if (currentCount > 1) {
-                window.tapZikr(id, currentCount); // decrements and updates UI
-                playAudio(z.text, id); // replay same
-            } else {
-                window.tapZikr(id, currentCount); // sets to 0
-                
-                // find next unfinished
-                let idx = zList.findIndex(x => x.id === id);
-                let nextZikr = zList.slice(idx + 1).find(x => (p[x.id] !== 0 && p[x.id] !== 'skip'));
-                
-                if (nextZikr) {
-                    setTimeout(() => playAudio(nextZikr.text, nextZikr.id), 1000);
-                } else {
-                    currentPlayingId = null; 
-                    renderAzkar(azkarCurrentCat);
-                }
-            }
-        } else {
-            currentPlayingId = null;
-            renderAzkar(azkarCurrentCat);
-        }
-    };
-
-    window.speechSynthesis.speak(utterance);
 }
 
 function shareZikr(text, ref) {
@@ -614,19 +561,24 @@ function doHaptic(type = 'light') {
     if (type === 'heavy') navigator.vibrate([50, 50, 50]);
 }
 
-// Notifications
+// Notifications (In-App Toast System)
+function showToast(message) {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg> <span>${message}</span>`;
+    container.appendChild(toast);
+    setTimeout(() => {
+        toast.style.animation = 'fadeOut 0.3s ease forwards';
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+
 function requestNotifications(enable) {
-    if(!enable) return toggleSetting('notifications', false);
-    if (!("Notification" in window)) return alert("متصفحك لا يدعم الإشعارات");
-    Notification.requestPermission().then(perm => {
-        if (perm === "granted") {
-            toggleSetting('notifications', true);
-            new Notification("حصن المسلم", { body: "تم تفعيل التذكير بالأذكار بنجاح!", icon: "🕌" });
-        } else {
-            document.getElementById('set-notif').checked = false;
-            toggleSetting('notifications', false);
-        }
-    });
+    toggleSetting('notifications', enable);
+    if(enable) {
+        showToast("تم تفعيل التذكيرات بنجاح! سيتم تنبيهك عند دخول وقت الأذكار.");
+    }
 }
 
 // Streaks
@@ -693,9 +645,6 @@ function switchTab(cat) {
 
     document.body.setAttribute('data-tod', bgType);
 
-    window.speechSynthesis.cancel();
-    currentPlayingId = null;
-
     renderAzkar(cat);
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -743,7 +692,6 @@ function renderAzkar(cat) {
         const pVal = progress[z.id] !== undefined ? progress[z.id] : z.count;
         const isSkip = pVal === 'skip';
         const isDone = pVal === 0;
-        const isPlaying = currentPlayingId === z.id;
 
         const el = document.createElement('div');
         el.className = `azkar-item ${isDone?'done':''} ${isSkip?'skipped':''}`;
@@ -763,15 +711,11 @@ function renderAzkar(cat) {
         const isFav = favorites.has(z.id);
         const starColor = isFav ? 'var(--gold)' : 'currentColor';
         const starFill = isFav ? 'var(--gold)' : 'none';
-        const playIcon = isPlaying ? 
-            `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>` : 
-            `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`;
 
         el.innerHTML = `
             <div class="zikr-header-actions">
                 <span class="zikr-badge">${i+1}</span>
                 <div class="zikr-tools">
-                    <button class="tool-btn ${isPlaying?'active':''}" onclick="playAudio(\`${z.text}\`, '${z.id}')" title="${isPlaying?'إيقاف':'استماع'}">${playIcon}</button>
                     <button class="tool-btn" onclick="shareZikr(\`${z.text}\`, \`${z.ref||''}\`)" title="مشاركة"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
                     <button class="tool-btn" onclick="toggleFav('${z.id}')" title="مفضلة"><svg width="16" height="16" viewBox="0 0 24 24" fill="${starFill}" stroke="${starColor}" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
                 </div>
@@ -847,6 +791,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const hr = new Date().getHours();
     switchTab(hr >= 4 && hr < 15 ? 'morning' : (hr >= 15 && hr < 20 ? 'evening' : 'sleep'));
+    
+    // Trigger In-App Reminder on load if enabled
+    if (appSettings.notifications) {
+        setTimeout(() => {
+            let p = loadProgress(azkarCurrentCat);
+            if (Object.keys(p).length === 0) {
+                const categoryNames = { morning: 'الصباح', evening: 'المساء', sleep: 'النوم' };
+                if (categoryNames[azkarCurrentCat]) {
+                    showToast(`لا تنسَ قراءة أذكار ${categoryNames[azkarCurrentCat]}! 🕌`);
+                }
+            }
+        }, 1500);
+    }
 });
 
 </script>
