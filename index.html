@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>الأذكار اليومية | Azkar Pro</title>
     
+    <!-- PWA Meta Tags & Manifest -->
+    <meta name="theme-color" content="#121F3D" id="theme-color-meta">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22Azkar%20Pro%22%2C%22short_name%22%3A%22Azkar%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230A1128%22%2C%22theme_color%22%3A%22%23121F3D%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%3Bcharset%3Dutf-8%2C%253Csvg%2520xmlns%253D%2527http%253A%252F%252Fwww.w3.org%252F2000%252Fsvg%2527%2520width%253D%2527192%2527%2520height%253D%2527192%2527%2520viewBox%253D%25270%25200%252024%252024%2527%2520fill%253D%2527%2523F59E0B%2527%253E%253Ccircle%2520cx%253D%252712%2527%2520cy%253D%252712%2527%2520r%253D%252710%2527%252F%253E%253C%252Fsvg%253E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,16 +46,21 @@
             font-family: 'Noto Naskh Arabic', sans-serif;
             background-color: var(--bg-1); color: var(--text);
             line-height: 1.5; overflow-x: hidden;
-            background-attachment: fixed;
-            transition: background-image 1s ease, background-color 0.3s ease;
         }
         
         .hidden { display: none !important; }
 
         /* Background Effects - Fixed Layering */
-        body[data-tod="morning"] { background-image: radial-gradient(circle at 85% 10%, rgba(251, 191, 36, 0.15) 0%, transparent 45%), radial-gradient(circle at 15% 50%, rgba(56, 189, 248, 0.08) 0%, transparent 55%); }
-        body[data-tod="evening"] { background-image: radial-gradient(circle at 85% 20%, rgba(249, 115, 22, 0.15) 0%, transparent 45%), radial-gradient(circle at 15% 60%, rgba(139, 92, 246, 0.08) 0%, transparent 55%); }
-        body[data-tod="sleep"] { background-image: radial-gradient(circle at 80% 15%, rgba(255, 255, 255, 0.05) 0%, transparent 35%), radial-gradient(1px 1px at 15% 25%, #fff, transparent), radial-gradient(1px 1px at 85% 45%, #fff, transparent), radial-gradient(2px 2px at 30% 70%, #fff, transparent), radial-gradient(1px 1px at 70% 85%, #fff, transparent); }
+        .app-bg {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            transition: opacity 0.5s ease, background 1s ease;
+        }
+        body[data-tod="morning"] .app-bg { background: radial-gradient(circle at 85% 10%, rgba(251, 191, 36, 0.25) 0%, transparent 50%), radial-gradient(circle at 15% 50%, rgba(56, 189, 248, 0.15) 0%, transparent 55%); }
+        body[data-tod="evening"] .app-bg { background: radial-gradient(circle at 85% 20%, rgba(249, 115, 22, 0.25) 0%, transparent 50%), radial-gradient(circle at 15% 60%, rgba(139, 92, 246, 0.15) 0%, transparent 55%); }
+        body[data-tod="sleep"] .app-bg { background: radial-gradient(circle at 80% 15%, rgba(255, 255, 255, 0.08) 0%, transparent 40%), radial-gradient(1.5px 1.5px at 15% 25%, #fff, transparent), radial-gradient(1.5px 1.5px at 85% 45%, #fff, transparent), radial-gradient(2px 2px at 30% 70%, #fff, transparent), radial-gradient(1.5px 1.5px at 70% 85%, #fff, transparent); }
+
+        /* Z-Index Fixes to ensure app content stays above the background layer */
+        .top-bar, .prayer-bar, .search-panel, .bottom-nav, .overlay, .bottom-sheet { position: relative; }
 
         /* Top Bar & Prayer Times */
         .top-bar {
@@ -106,7 +118,7 @@
         .nav-item.active { color: var(--gold); }
 
         /* Main Container & Cards */
-        .container { max-width: 600px; margin: 0 auto; padding: 130px 1rem 100px 1rem; min-height: 100vh; }
+        .container { position: relative; z-index: 10; max-width: 600px; margin: 0 auto; padding: 130px 1rem 100px 1rem; min-height: 100vh; }
         .card { background: var(--bg-2); border-radius: 16px; border: 1px solid var(--border-sub); box-shadow: 0 4px 20px rgba(0,0,0,0.1); margin-bottom: 2rem; }
         .card-header { padding: 1.25rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
         
@@ -192,6 +204,9 @@
     </style>
 </head>
 <body data-tod="morning">
+
+<!-- Dynamic Background Layer -->
+<div class="app-bg"></div>
 
 <!-- In-App Notification Container -->
 <div id="toast-container" class="toast-container"></div>
@@ -557,8 +572,10 @@ function toggleFav(id) {
 
 function doHaptic(type = 'light') {
     if (!appSettings.enableHaptics || !navigator.vibrate) return;
-    if (type === 'light') navigator.vibrate(15);
-    if (type === 'heavy') navigator.vibrate([50, 50, 50]);
+    try {
+        if (type === 'light') navigator.vibrate(40); // 40ms is a solid tick for Android
+        if (type === 'heavy') navigator.vibrate([80, 40, 80]); // Distinct double-tick
+    } catch (e) {}
 }
 
 // Notifications (In-App Toast System)
@@ -767,13 +784,21 @@ document.getElementById('search-toggle').addEventListener('click', () => {
 });
 document.getElementById('azkar-search').addEventListener('input', e => { currentSearchQuery = e.target.value.trim(); renderAzkar(azkarCurrentCat); });
 
-// Theme
+// Theme & PWA Settings
+function updateThemeMeta(isLight) {
+    const meta = document.getElementById('theme-color-meta');
+    if(meta) meta.setAttribute('content', isLight ? '#ffffff' : '#121F3D');
+}
+
 document.getElementById('theme-toggle').addEventListener('click', () => {
     const html = document.documentElement;
-    html.setAttribute('data-theme', html.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+    const isLight = html.getAttribute('data-theme') !== 'light';
+    html.setAttribute('data-theme', isLight ? 'light' : 'dark');
     localStorage.setItem('mizan_theme', html.getAttribute('data-theme'));
-    document.getElementById('icon-sun').style.display = html.getAttribute('data-theme') === 'light' ? 'none' : 'block';
-    document.getElementById('icon-moon').style.display = html.getAttribute('data-theme') === 'light' ? 'block' : 'none';
+    
+    document.getElementById('icon-sun').style.display = isLight ? 'none' : 'block';
+    document.getElementById('icon-moon').style.display = isLight ? 'block' : 'none';
+    updateThemeMeta(isLight);
 });
 
 // Initialization
@@ -784,6 +809,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.documentElement.setAttribute('data-theme', 'light');
         document.getElementById('icon-sun').style.display = 'none';
         document.getElementById('icon-moon').style.display = 'block';
+        updateThemeMeta(true);
+    } else {
+        updateThemeMeta(false);
     }
 
     updateClock(); setInterval(updateClock, 60000);
