@@ -18,6 +18,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
+        /* Global Safe Area & Layout Variables */
+        :root {
+            --safe-top: max(env(safe-area-inset-top), 24px);
+        }
+
         /* Base Dynamic Variables - Transitions smoothly when [data-tod] changes */
         body {
             /* Fallback / Morning Dark Theme */
@@ -131,14 +136,14 @@
             background-color: var(--bg-2); border-color: var(--border);
             transition: background-color 0.8s ease, border-color 0.8s ease, box-shadow 0.8s ease;
         }
-        .gradient-text, .icon-btn, .azkar-text, .azkar-virtue, .nav-item, .tb-time, .tb-date, .zikr-badge, .prayer-live, .sheet-handle {
+        .gradient-text, .icon-btn, .azkar-text, .azkar-virtue, .nav-item, .tb-time, .tb-date, .zikr-badge, .sheet-handle {
             transition: color 0.8s ease, background-color 0.8s ease;
         }
 
-        /* Top Bar & Prayer Times */
+        /* Top Bar */
         .top-bar {
-            position: fixed; top: 0; left: 0; right: 0; height: 80px; z-index: 100;
-            display: flex; align-items: center; justify-content: space-between; padding: 0 1rem;
+            position: fixed; top: 0; left: 0; right: 0; height: calc(72px + var(--safe-top)); z-index: 100;
+            display: flex; align-items: center; justify-content: space-between; padding: var(--safe-top) 1rem 0 1rem;
             box-shadow: 0 4px 15px rgba(0,0,0,0.15); border-bottom-width: 1px; border-bottom-style: solid;
         }
         .tb-actions { display: flex; align-items: center; gap: 0.4rem; }
@@ -153,14 +158,6 @@
         .tb-time { font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; font-weight: 800; direction: ltr; line-height: 1.2; }
         .tb-date { font-family: 'Noto Naskh Arabic', serif; font-size: 0.75rem; color: var(--text-3); text-align: center; }
         
-        .prayer-bar {
-            position: fixed; top: 80px; left: 0; right: 0; height: 36px; z-index: 98;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.85rem; color: var(--text); gap: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            border-bottom-width: 1px; border-bottom-style: solid;
-        }
-        .prayer-live { color: var(--emerald); font-weight: bold; font-family: 'JetBrains Mono', monospace; text-shadow: 0 0 8px rgba(16, 185, 129, 0.2); }
-
         .icon-btn {
             background: transparent; border: 1px solid transparent; color: var(--text-3);
             display: flex; align-items: center; justify-content: center;
@@ -170,7 +167,7 @@
         .font-btn { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 0.95rem; }
 
         /* Search Panel */
-        .search-panel { position: fixed; top: 116px; left: 0; right: 0; padding: 0.8rem 1rem; z-index: 99; border-bottom-width: 1px; border-bottom-style: solid; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .search-panel { position: fixed; top: calc(72px + var(--safe-top)); left: 0; right: 0; padding: 0.8rem 1rem; z-index: 99; border-bottom-width: 1px; border-bottom-style: solid; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .search-input {
             width: 100%; max-width: 600px; margin: 0 auto; display: block;
             padding: 0.8rem 2.5rem 0.8rem 1rem; border-radius: 12px;
@@ -198,7 +195,7 @@
         .nav-item.active svg { filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.4)); transform: scale(1.1); }
 
         /* Main Container & Cards */
-        .container { position: relative; z-index: 10; max-width: 600px; margin: 0 auto; padding: 130px 1rem 100px 1rem; min-height: 100vh; }
+        .container { position: relative; z-index: 10; max-width: 600px; margin: 0 auto; padding: calc(96px + var(--safe-top)) 1rem 100px 1rem; min-height: 100vh; }
         .card { border-radius: 16px; border-width: 1px; border-style: solid; box-shadow: 0 8px 30px rgba(0,0,0,0.15); margin-bottom: 2rem; }
         .card-header { padding: 1.25rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; transition: border-color 0.8s ease;}
         
@@ -290,7 +287,7 @@
         .btn-primary:active { transform: translateY(0) scale(0.95); }
         
         /* Toast Notifications */
-        .toast-container { position: fixed; top: 130px; left: 50%; transform: translateX(-50%); z-index: 999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; width: 90%; max-width: 400px; }
+        .toast-container { position: fixed; top: calc(90px + var(--safe-top)); left: 50%; transform: translateX(-50%); z-index: 999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; width: 90%; max-width: 400px; }
         .toast { background-color: var(--surface); color: var(--text); border: 1px solid var(--gold); border-left: 4px solid var(--gold); padding: 14px 20px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.4); font-family: 'Noto Naskh Arabic', serif; display: flex; align-items: center; gap: 12px; animation: slideDown 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; direction: rtl; transition: background-color 0.8s ease;}
         @keyframes slideDown { from { opacity: 0; transform: translateY(-20px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
         @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px) scale(0.95); } }
@@ -344,12 +341,6 @@
         </button>
     </div>
 </header>
-
-<!-- PRAYER TIME BAR -->
-<div class="prayer-bar" onclick="fetchPrayerTimes()" style="cursor:pointer;" title="تحديث مواقيت الصلاة">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-    <span id="prayer-display">جاري جلب المواقيت...</span>
-</div>
 
 <div class="search-panel hidden" id="search-panel">
     <input type="text" id="azkar-search" placeholder="ابحث في الأذكار..." class="search-input">
@@ -601,13 +592,13 @@ function initSettingsUI() {
     
     // Font
     let fs = parseFloat(localStorage.getItem('mizan_font_size')) || 1.2;
-    document.documentElement.style.setProperty('--font-size-azkar', fs + 'rem');
+    document.body.style.setProperty('--font-size-azkar', fs + 'rem');
 }
 
 function updateFontSize(change) {
     let fs = parseFloat(localStorage.getItem('mizan_font_size')) || 1.2;
     fs = Math.max(0.9, Math.min(2.5, fs + change));
-    document.documentElement.style.setProperty('--font-size-azkar', fs + 'rem');
+    document.body.style.setProperty('--font-size-azkar', fs + 'rem');
     localStorage.setItem('mizan_font_size', fs);
 }
 
@@ -643,48 +634,6 @@ function updateClock() {
     
     document.getElementById('date-display').textContent = `${hijriDate} | ${gregDate}`;
 }
-
-let prayerTimes = {};
-
-function calculateNextPrayer() {
-    if(!prayerTimes.Fajr) return;
-    const now = new Date();
-    const currentMins = now.getHours() * 60 + now.getMinutes();
-    
-    // Parse time like "05:30 (EEST)" to just "05:30"
-    const parseTime = (timeStr) => timeStr.split(' ')[0];
-
-    const pList = [
-        {name: 'الفجر', time: parseTime(prayerTimes.Fajr)}, 
-        {name: 'الظهر', time: parseTime(prayerTimes.Dhuhr)},
-        {name: 'العصر', time: parseTime(prayerTimes.Asr)}, 
-        {name: 'المغرب', time: parseTime(prayerTimes.Maghrib)}, 
-        {name: 'العشاء', time: parseTime(prayerTimes.Isha)}
-    ];
-    
-    let nextP = null;
-    for(let p of pList) {
-        let [h, m] = p.time.split(':').map(Number);
-        if(h * 60 + m > currentMins) { nextP = p; break; }
-    }
-    if(!nextP) nextP = pList[0]; // Next day Fajr
-    
-    document.getElementById('prayer-display').innerHTML = `الصلاة القادمة: <span class="prayer-live">${nextP.name} ${nextP.time}</span>`;
-}
-
-async function fetchPrayerTimes() {
-    const display = document.getElementById('prayer-display');
-    display.innerHTML = 'جاري جلب المواقيت...';
-    try {
-        const res = await fetch(`https://api.aladhan.com/v1/timingsByCity?city=Mecca&country=SA&method=4`);
-        const data = await res.json();
-        prayerTimes = data.data.timings;
-        calculateNextPrayer();
-    } catch(e) {
-        display.textContent = 'تعذر جلب المواقيت';
-    }
-}
-
 
 // Tools (Share, Favorite, Haptics, Tashkeel)
 function removeTashkeel(text) {
@@ -1006,8 +955,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     updateClock(); setInterval(updateClock, 60000);
     
-    fetchPrayerTimes();
-
     const initialTod = getCurrentTOD();
     switchTab(initialTod);
     
