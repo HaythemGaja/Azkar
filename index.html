@@ -22,21 +22,21 @@
         :root {
             --bg-1: #0A1128; --bg-2: #121F3D;
             --surface: #1E2D52; --surface-2: #283A64;
-            --border: #1E2D52; --border-sub: #172645;
+            --border: #2A3F70; --border-sub: #172645;
             --text: #F8FAFC; --text-3: #94A3B8;
-            --gold: #F59E0B; --gold-light: #FBBF24;
-            --emerald: #10B981; --em-light: #34D399;
-            --danger: #EF4444; --danger-light: #F87171;
+            --gold: #F59E0B; --gold-light: #FDE047;
+            --emerald: #10B981; --em-light: #6EE7B7;
+            --danger: #EF4444; --danger-light: #FCA5A5;
             --font-size-azkar: 1.2rem; 
         }
 
         [data-theme="light"] {
-            --bg-1: #f3f4f6; --bg-2: #ffffff;
-            --surface: #e5e7eb; --surface-2: #f9fafb;
-            --border: #e5e7eb; --border-sub: #d1d5db;
-            --text: #111827; --text-3: #6b7280;
-            --gold: #b48518; --gold-light: #d97706;
-            --emerald: #059669; --em-light: #10b981;
+            --bg-1: #F8FAFC; --bg-2: #FFFFFF;
+            --surface: #F1F5F9; --surface-2: #E2E8F0;
+            --border: #E2E8F0; --border-sub: #CBD5E1;
+            --text: #0F172A; --text-3: #64748B;
+            --gold: #D97706; --gold-light: #FBBF24;
+            --emerald: #059669; --em-light: #34D399;
             --danger: #DC2626; --danger-light: #EF4444;
         }
 
@@ -50,6 +50,17 @@
         
         .hidden { display: none !important; }
 
+        /* Global Animations */
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.9) translateY(10px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
         /* Background Effects - Fixed Layering */
         .app-bg {
             position: fixed; inset: 0; z-index: 0; pointer-events: none;
@@ -59,147 +70,200 @@
         body[data-tod="evening"] .app-bg { background: radial-gradient(circle at 85% 20%, rgba(249, 115, 22, 0.25) 0%, transparent 50%), radial-gradient(circle at 15% 60%, rgba(139, 92, 246, 0.15) 0%, transparent 55%); }
         body[data-tod="sleep"] .app-bg { background: radial-gradient(circle at 80% 15%, rgba(255, 255, 255, 0.08) 0%, transparent 40%), radial-gradient(1.5px 1.5px at 15% 25%, #fff, transparent), radial-gradient(1.5px 1.5px at 85% 45%, #fff, transparent), radial-gradient(2px 2px at 30% 70%, #fff, transparent), radial-gradient(1.5px 1.5px at 70% 85%, #fff, transparent); }
 
-        /* Z-Index Fixes to ensure app content stays above the background layer */
+        /* Z-Index Fixes */
         .top-bar, .prayer-bar, .search-panel, .bottom-nav, .overlay, .bottom-sheet { position: relative; }
 
         /* Top Bar & Prayer Times */
         .top-bar {
             position: fixed; top: 0; left: 0; right: 0; height: 80px;
-            background: var(--bg-2); border-bottom: 1px solid var(--border);
+            background: linear-gradient(180deg, var(--bg-2) 0%, var(--surface) 100%);
+            border-bottom: 1px solid var(--border);
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 1rem; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 0 1rem; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
         .tb-actions { display: flex; align-items: center; gap: 0.4rem; }
         .tb-center { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 60%; }
-        .tb-time { font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; font-weight: 700; color: var(--gold); direction: ltr; line-height: 1.2; }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-size: 200% auto; animation: gradientShift 4s linear infinite;
+        }
+        
+        .tb-time { font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; font-weight: 800; direction: ltr; line-height: 1.2; }
         .tb-date { font-family: 'Noto Naskh Arabic', serif; font-size: 0.75rem; color: var(--text-3); text-align: center; }
         
         .prayer-bar {
             position: fixed; top: 80px; left: 0; right: 0; height: 36px;
-            background: var(--surface); border-bottom: 1px solid var(--border);
+            background: linear-gradient(90deg, var(--bg-2), var(--surface), var(--bg-2));
+            background-size: 200% 100%; animation: gradientShift 6s ease infinite;
+            border-bottom: 1px solid var(--border);
             display: flex; align-items: center; justify-content: center;
             z-index: 98; font-size: 0.85rem; color: var(--text); gap: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
-        .prayer-live { color: var(--emerald); font-weight: bold; font-family: 'JetBrains Mono', monospace; }
+        .prayer-live { color: var(--emerald); font-weight: bold; font-family: 'JetBrains Mono', monospace; text-shadow: 0 0 8px rgba(16, 185, 129, 0.4); }
 
         .icon-btn {
             background: transparent; border: 1px solid transparent; color: var(--text-3);
             display: flex; align-items: center; justify-content: center;
-            width: 40px; height: 40px; border-radius: 10px; cursor: pointer; transition: all 0.2s;
+            width: 40px; height: 40px; border-radius: 10px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .icon-btn:hover, .icon-btn.active { background: var(--surface); color: var(--text); }
+        .icon-btn:hover, .icon-btn.active { 
+            background: linear-gradient(135deg, var(--surface), var(--surface-2));
+            color: var(--gold); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
         .font-btn { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 0.95rem; }
 
         /* Search Panel */
         .search-panel {
             position: fixed; top: 116px; left: 0; right: 0; padding: 0.8rem 1rem;
             background: var(--bg-2); z-index: 99; border-bottom: 1px solid var(--border);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
         .search-input {
             width: 100%; max-width: 600px; margin: 0 auto; display: block;
             padding: 0.8rem 2.5rem 0.8rem 1rem; border-radius: 12px;
             border: 1px solid var(--border); background: var(--bg-1);
             color: var(--text); font-family: 'Noto Naskh Arabic', serif; outline: none;
+            transition: all 0.3s ease;
         }
+        .search-input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15); }
 
         /* Bottom Nav */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0; height: 72px;
-            background: var(--bg-2); border-top: 1px solid var(--border);
+            background: linear-gradient(0deg, var(--bg-2) 0%, var(--surface) 100%);
+            border-top: 1px solid var(--border);
             display: flex; align-items: center; justify-content: space-around;
             z-index: 100; padding-bottom: env(safe-area-inset-bottom);
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.15);
         }
         .nav-item {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             color: var(--text-3); background: none; border: none; cursor: pointer;
             font-family: 'Noto Naskh Arabic', serif; font-size: 0.8rem; gap: 4px;
-            width: 25%; height: 100%; transition: color 0.2s;
+            width: 25%; height: 100%; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        .nav-item:hover { color: var(--text); transform: translateY(-2px); }
         .nav-item.active { color: var(--gold); }
+        .nav-item.active svg { filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.4)); transform: scale(1.1); transition: all 0.3s; }
 
         /* Main Container & Cards */
         .container { position: relative; z-index: 10; max-width: 600px; margin: 0 auto; padding: 130px 1rem 100px 1rem; min-height: 100vh; }
-        .card { background: var(--bg-2); border-radius: 16px; border: 1px solid var(--border-sub); box-shadow: 0 4px 20px rgba(0,0,0,0.1); margin-bottom: 2rem; }
+        .card { 
+            background: linear-gradient(145deg, var(--bg-2), var(--surface));
+            border-radius: 16px; border: 1px solid var(--border); 
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15); margin-bottom: 2rem; 
+        }
         .card-header { padding: 1.25rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
         
-        .azkar-progress-pill { display: flex; align-items: center; gap: 0.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text-3); background: var(--surface); padding: 0.4rem 0.9rem; border-radius: 100px; }
-        .azkar-prog-bar { width: 60px; height: 6px; border-radius: 3px; background: var(--border); overflow: hidden; }
-        .azkar-prog-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--emerald), var(--em-light)); transition: width 0.4s ease; }
+        .azkar-progress-pill { display: flex; align-items: center; gap: 0.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text-3); background: var(--bg-1); border: 1px solid var(--border); padding: 0.4rem 0.9rem; border-radius: 100px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
+        .azkar-prog-bar { width: 70px; height: 8px; border-radius: 4px; background: var(--surface-2); overflow: hidden; }
+        .azkar-prog-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--emerald), var(--em-light), var(--emerald)); background-size: 200% 100%; animation: gradientShift 2s linear infinite; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
 
         /* Zikr Item Styles */
-        .azkar-list-wrap { padding: 1rem; display: flex; flex-direction: column; gap: 1rem; }
+        .azkar-list-wrap { padding: 1rem; display: flex; flex-direction: column; gap: 1.2rem; }
         .azkar-item {
-            background: var(--bg-1); border: 1px solid var(--border-sub);
-            border-radius: 14px; padding: 1.25rem; position: relative; direction: rtl;
-            transition: all 0.3s ease;
+            background: linear-gradient(145deg, var(--bg-1), var(--surface)); 
+            border: 1px solid var(--border-sub);
+            border-radius: 16px; padding: 1.25rem; position: relative; direction: rtl;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            animation: popIn 0.4s ease forwards;
         }
-        [data-theme="light"] .azkar-item { background: #fafafa; }
-        .azkar-item.done { opacity: 0.5; border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.05); }
-        .azkar-item.skipped { opacity: 0.4; border-style: dashed; }
+        [data-theme="light"] .azkar-item { background: linear-gradient(145deg, #ffffff, #f8fafc); }
+        
+        .azkar-item:hover { border-color: var(--gold); transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        
+        .azkar-item.done { 
+            opacity: 0.6; transform: scale(0.98); 
+            border-color: var(--emerald); background: linear-gradient(145deg, rgba(16,185,129,0.05), rgba(16,185,129,0.1)); 
+            box-shadow: inset 0 0 20px rgba(16,185,129,0.05);
+        }
+        .azkar-item.skipped { opacity: 0.4; border-style: dashed; transform: scale(0.98); }
         
         .zikr-header-actions { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.8rem; }
-        .zikr-badge { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-3); background: var(--surface); padding: 2px 8px; border-radius: 6px; }
+        .zikr-badge { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--gold); background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2); padding: 2px 10px; border-radius: 8px; font-weight: bold;}
         .zikr-tools { display: flex; gap: 4px; }
-        .tool-btn { background: var(--surface); border: none; color: var(--text-3); width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
-        .tool-btn:hover { background: var(--surface-2); color: var(--gold); }
+        .tool-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text-3); width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+        .tool-btn:hover { background: linear-gradient(135deg, var(--surface-2), var(--surface)); color: var(--gold); border-color: var(--gold); transform: scale(1.05); }
         .tool-btn.active { color: var(--gold); }
 
-        .azkar-text { font-family: 'Noto Naskh Arabic', serif; font-size: var(--font-size-azkar); line-height: 2; color: var(--text); margin-bottom: 0.8rem; }
-        .azkar-translation { font-family: -apple-system, sans-serif; font-size: 0.9rem; color: var(--text-3); direction: ltr; text-align: left; margin-bottom: 0.5rem; padding-left: 10px; border-left: 2px solid var(--border); }
-        .azkar-transliteration { font-family: 'Crimson Pro', serif; font-size: 0.95rem; color: var(--gold-light); direction: ltr; text-align: left; margin-bottom: 0.8rem; font-style: italic; }
-        .azkar-ref { font-size: 0.8rem; color: var(--text-3); background: var(--surface); display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; margin-bottom: 0.8rem; }
+        .azkar-text { font-family: 'Noto Naskh Arabic', serif; font-size: var(--font-size-azkar); line-height: 2; color: var(--text); margin-bottom: 0.8rem; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .azkar-translation { font-family: -apple-system, sans-serif; font-size: 0.9rem; color: var(--text-3); direction: ltr; text-align: left; margin-bottom: 0.5rem; padding-left: 12px; border-left: 3px solid var(--gold); border-radius: 2px;}
+        .azkar-transliteration { font-family: 'Crimson Pro', serif; font-size: 0.95rem; color: var(--gold-light); direction: ltr; text-align: left; margin-bottom: 0.8rem; font-style: italic; opacity: 0.8; }
+        .azkar-ref { font-size: 0.8rem; color: var(--text-3); background: var(--surface-2); display: inline-block; padding: 0.3rem 0.8rem; border-radius: 6px; margin-bottom: 0.8rem; border: 1px solid var(--border); }
         
         .azkar-bottom { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; margin-top: 0.5rem; border-top: 1px solid var(--border); padding-top: 1rem;}
-        .azkar-virtue { font-size: 0.85rem; color: var(--gold); flex: 1; }
+        .azkar-virtue { font-size: 0.85rem; color: var(--gold); flex: 1; line-height: 1.6; }
         
-        .azkar-actions { display: flex; align-items: center; gap: 0.6rem; }
+        .azkar-actions { display: flex; align-items: center; gap: 0.8rem; }
         .azkar-count-btn {
-            width: 60px; height: 60px; border-radius: 50%;
-            background: linear-gradient(135deg, rgba(201,168,76,0.15), rgba(201,168,76,0.05));
-            border: 2px solid rgba(201,168,76,0.4); color: var(--gold-light);
-            font-size: 1.5rem; font-weight: 700; cursor: pointer; transition: transform 0.1s;
+            width: 64px; height: 64px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
+            background-size: 200% 200%; animation: gradientShift 3s ease infinite;
+            border: none; color: #000; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+            font-size: 1.6rem; font-weight: 700; cursor: pointer; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .azkar-count-btn:active { transform: scale(0.9); }
-        .azkar-item.done .azkar-count-btn { background: rgba(16,185,129,0.1); border-color: var(--emerald); color: var(--emerald); }
-        .azkar-skip-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--surface); border: none; color: var(--text-3); cursor: pointer; }
+        .azkar-count-btn:active { transform: scale(0.85); box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4); }
+        
+        .azkar-item.done .azkar-count-btn { 
+            background: linear-gradient(135deg, var(--emerald), var(--em-light)); 
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); color: #fff;
+        }
+        .azkar-skip-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); color: var(--text-3); cursor: pointer; transition: 0.2s; }
+        .azkar-skip-btn:hover { background: var(--danger-light); color: #fff; border-color: var(--danger); transform: scale(1.1); }
 
         /* Modals & Bottom Sheets */
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
         .overlay.active { opacity: 1; pointer-events: auto; }
         
         .bottom-sheet {
-            position: fixed; bottom: -100%; left: 0; right: 0; background: var(--bg-2);
-            border-radius: 24px 24px 0 0; z-index: 201; padding: 1.5rem;
-            transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
-            max-height: 80vh; overflow-y: auto; box-shadow: 0 -10px 40px rgba(0,0,0,0.3);
+            position: fixed; bottom: -100%; left: 0; right: 0; 
+            background: linear-gradient(180deg, var(--bg-2), var(--bg-1));
+            border-radius: 28px 28px 0 0; z-index: 201; padding: 1.5rem;
+            transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+            max-height: 85vh; overflow-y: auto; box-shadow: 0 -10px 40px rgba(0,0,0,0.4);
+            border-top: 1px solid var(--border);
         }
         .bottom-sheet.active { bottom: 0; }
-        .sheet-handle { width: 40px; height: 5px; background: var(--border); border-radius: 5px; margin: 0 auto 1.5rem auto; }
+        .sheet-handle { width: 48px; height: 6px; background: var(--surface-2); border-radius: 6px; margin: 0 auto 1.5rem auto; }
         
         .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-        .menu-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; text-align: center; color: var(--text); cursor: pointer; }
-        .menu-card:hover { border-color: var(--gold); color: var(--gold); }
-        .menu-card svg { margin-bottom: 0.5rem; }
+        .menu-card { 
+            background: linear-gradient(145deg, var(--surface), var(--bg-2)); 
+            border: 1px solid var(--border); border-radius: 16px; padding: 1.2rem; text-align: center; color: var(--text); cursor: pointer; 
+            transition: all 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .menu-card:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-4px); box-shadow: 0 8px 20px rgba(245, 158, 11, 0.15); }
+        .menu-card svg { margin-bottom: 0.8rem; transition: transform 0.3s; }
+        .menu-card:hover svg { transform: scale(1.1); }
 
-        .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--border); }
-        .toggle-switch { position: relative; width: 44px; height: 24px; }
+        .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 0; border-bottom: 1px solid var(--border); }
+        .toggle-switch { position: relative; width: 48px; height: 26px; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--surface-2); border-radius: 24px; transition: .4s; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; border-radius: 50%; transition: .4s; }
-        input:checked + .slider { background-color: var(--emerald); }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--surface-2); border-radius: 26px; transition: .4s; border: 1px solid var(--border); }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 3px; background-color: white; border-radius: 50%; transition: .4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        input:checked + .slider { background: linear-gradient(90deg, var(--emerald), var(--em-light)); border-color: var(--emerald); }
         input:checked + .slider:before { transform: translateX(20px); }
 
         .stats-box { text-align: center; padding: 2rem 0; }
-        .streak-num { font-size: 3.5rem; font-weight: bold; color: var(--gold); line-height: 1; font-family: 'JetBrains Mono'; margin-bottom: 0.5rem;}
+        .streak-num { font-size: 4rem; font-weight: bold; line-height: 1; font-family: 'JetBrains Mono'; margin-bottom: 0.5rem; text-shadow: 0 4px 15px rgba(245, 158, 11, 0.3); }
         
-        /* Completion */
-        .azkar-completion { text-align: center; padding: 4rem 1rem; }
-        .btn-primary { background: var(--gold); color: #000; border: none; padding: 0.8rem 2rem; border-radius: 100px; font-weight: bold; font-family: inherit; cursor: pointer; font-size: 1rem; margin-top: 1rem; display: inline-flex; gap: 8px; align-items: center;}
+        /* Completion Screen */
+        .azkar-completion { text-align: center; padding: 4rem 1rem; animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .btn-primary { 
+            background: linear-gradient(135deg, var(--gold), var(--gold-light)); background-size: 200% 200%; animation: gradientShift 3s ease infinite;
+            color: #000; border: none; padding: 0.9rem 2.5rem; border-radius: 100px; font-weight: bold; font-family: inherit; cursor: pointer; font-size: 1.1rem; margin-top: 1.5rem; display: inline-flex; gap: 10px; align-items: center; box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3); transition: all 0.3s;
+        }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(245, 158, 11, 0.4); }
+        .btn-primary:active { transform: translateY(0) scale(0.95); }
         
         /* Toast Notifications */
         .toast-container { position: fixed; top: 130px; left: 50%; transform: translateX(-50%); z-index: 999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; width: 90%; max-width: 400px; }
-        .toast { background: var(--surface); color: var(--text); border: 1px solid var(--border); padding: 14px 20px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); font-family: 'Noto Naskh Arabic', serif; display: flex; align-items: center; gap: 12px; animation: slideDown 0.4s ease forwards; direction: rtl; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .toast { background: linear-gradient(135deg, var(--surface), var(--bg-2)); color: var(--text); border: 1px solid var(--gold); border-left: 4px solid var(--gold); padding: 14px 20px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.4); font-family: 'Noto Naskh Arabic', serif; display: flex; align-items: center; gap: 12px; animation: slideDown 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; direction: rtl; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
         @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px) scale(0.95); } }
     </style>
 </head>
@@ -223,7 +287,7 @@
     </div>
     
     <div class="tb-center">
-        <div class="tb-time" id="time-display">--:--</div>
+        <div class="tb-time gradient-text" id="time-display">--:--</div>
         <div class="tb-date" id="date-display">--</div>
     </div>
     
@@ -249,22 +313,28 @@
     <div class="card">
         <div class="card-header">
             <div>
-                <h2 style="font-size:1.3rem; color:var(--gold);" id="cat-title-display">أذكار الصباح</h2>
+                <h2 style="font-size:1.3rem;" class="gradient-text" id="cat-title-display">أذكار الصباح</h2>
                 <div class="card-sub" id="cat-sub-display">Morning Remembrance</div>
             </div>
             <div class="azkar-progress-pill">
                 <span id="azkar-prog-done">0</span>/<span id="azkar-prog-total">0</span>
-                <div class="azkar-prog-bar"><div id="azkar-prog-fill"></div></div>
+                <div class="azkar-prog-bar"><div id="azkar-prog-fill" class="azkar-prog-fill"></div></div>
             </div>
         </div>
 
         <div id="azkar-list" class="azkar-list-wrap"></div>
 
         <div id="azkar-completion" class="azkar-completion hidden">
-            <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" stroke-width="2" style="margin:0 auto 1rem;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
-            <h2 style="color:var(--emerald); margin-bottom:0.5rem;">أتممت الأذكار!</h2>
-            <p style="color:var(--text-3); margin-bottom:1rem;">تم إضافة يوم إلى سلسلة التزامك المستمرة.</p>
-            <button class="btn-primary" onclick="resetAzkar(azkarCurrentCat)">↺ إعادة الأذكار</button>
+            <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="url(#success-grad)" stroke-width="2" style="margin:0 auto 1.5rem; filter: drop-shadow(0 4px 10px rgba(16,185,129,0.4));">
+                <defs><linearGradient id="success-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="var(--em-light)" /><stop offset="100%" stop-color="var(--emerald)" /></linearGradient></defs>
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/>
+            </svg>
+            <h2 style="color:var(--emerald); margin-bottom:0.5rem; font-size: 1.8rem;">أتممت الأذكار!</h2>
+            <p style="color:var(--text-3); margin-bottom:1rem; font-size: 1.1rem;">تم إضافة يوم إلى سلسلة التزامك المستمرة. ✨</p>
+            <button class="btn-primary" onclick="resetAzkar(azkarCurrentCat)">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                إعادة الأذكار
+            </button>
         </div>
     </div>
 </div>
@@ -295,49 +365,49 @@
 <!-- MENU BOTTOM SHEET -->
 <div class="bottom-sheet" id="menu-sheet">
     <div class="sheet-handle"></div>
-    <h3 style="margin-bottom: 1.5rem; color: var(--gold);">تصنيفات أخرى</h3>
+    <h3 style="margin-bottom: 1.5rem;" class="gradient-text">تصنيفات أخرى</h3>
     
     <div class="menu-grid" style="margin-bottom: 1.5rem;">
         <div class="menu-card" onclick="switchTab('after_prayer'); closeAllModals();">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            <div>بعد الصلاة</div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            <div style="font-weight: bold; margin-top: 5px;">بعد الصلاة</div>
         </div>
         <div class="menu-card" onclick="switchTab('travel'); closeAllModals();">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 22h20"/><path d="M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18"/><path d="M14 2v20"/><path d="M10 2v20"/></svg>
-            <div>السفر</div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 22h20"/><path d="M4 22V4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v18"/><path d="M14 2v20"/><path d="M10 2v20"/></svg>
+            <div style="font-weight: bold; margin-top: 5px;">السفر</div>
         </div>
         <div class="menu-card" onclick="switchTab('waking_up'); closeAllModals();">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
-            <div>الاستيقاظ</div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+            <div style="font-weight: bold; margin-top: 5px;">الاستيقاظ</div>
         </div>
         <div class="menu-card" onclick="switchTab('favorites'); closeAllModals();">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            <div>المفضلة</div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <div style="font-weight: bold; margin-top: 5px;">المفضلة</div>
         </div>
     </div>
 
-    <h3 style="margin-bottom: 1.5rem; color: var(--gold); border-top: 1px solid var(--border); padding-top: 1.5rem;">الإعدادات</h3>
+    <h3 style="margin-bottom: 1.5rem; border-top: 1px solid var(--border); padding-top: 1.5rem;" class="gradient-text">الإعدادات</h3>
     <div class="menu-grid" style="margin-bottom: 2rem;">
         <div class="menu-card" onclick="openStats()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-            <div>الإحصائيات</div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            <div style="font-weight: bold; margin-top: 5px;">الإحصائيات</div>
         </div>
     </div>
 
     <div class="settings-row">
-        <span>إظهار الترجمة (Translation)</span>
+        <span style="font-weight: bold;">إظهار الترجمة (Translation)</span>
         <label class="toggle-switch"><input type="checkbox" id="set-trans" onchange="toggleSetting('showTranslation', this.checked)"><span class="slider"></span></label>
     </div>
     <div class="settings-row">
-        <span>إظهار التشكيل</span>
+        <span style="font-weight: bold;">إظهار التشكيل</span>
         <label class="toggle-switch"><input type="checkbox" id="set-tash" onchange="toggleSetting('showTashkeel', this.checked)"><span class="slider"></span></label>
     </div>
     <div class="settings-row">
-        <span>الاهتزاز عند النقر (Haptics)</span>
+        <span style="font-weight: bold;">الاهتزاز عند النقر (Haptics)</span>
         <label class="toggle-switch"><input type="checkbox" id="set-hap" onchange="toggleSetting('enableHaptics', this.checked)"><span class="slider"></span></label>
     </div>
     <div class="settings-row">
-        <span>تفعيل الإشعارات والتذكير</span>
+        <span style="font-weight: bold;">تفعيل الإشعارات والتذكير</span>
         <label class="toggle-switch"><input type="checkbox" id="set-notif" onchange="requestNotifications(this.checked)"><span class="slider"></span></label>
     </div>
 </div>
@@ -345,19 +415,19 @@
 <!-- STATS MODAL -->
 <div class="bottom-sheet" id="stats-sheet">
     <div class="sheet-handle"></div>
-    <h3 style="margin-bottom: 1rem; color: var(--gold);">إحصائياتك</h3>
+    <h3 style="margin-bottom: 1rem;" class="gradient-text">إحصائياتك</h3>
     <div class="stats-box">
-        <div class="streak-num" id="stat-streak">0</div>
-        <div style="color: var(--text-3); margin-bottom: 2rem;">يوم متتالي من الالتزام 🔥</div>
+        <div class="streak-num gradient-text" id="stat-streak">0</div>
+        <div style="color: var(--text-3); margin-bottom: 2rem; font-size: 1.1rem;">يوم متتالي من الالتزام 🔥</div>
         
-        <div style="display:flex; justify-content: space-around; background: var(--surface); padding: 1.5rem; border-radius: 16px;">
+        <div style="display:flex; justify-content: space-around; background: linear-gradient(145deg, var(--surface), var(--bg-2)); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
             <div>
-                <div style="font-size: 1.5rem; font-weight: bold;" id="stat-total">0</div>
-                <div style="font-size: 0.8rem; color: var(--text-3);">إجمالي الأذكار</div>
+                <div style="font-size: 1.8rem; font-weight: bold; font-family: 'JetBrains Mono';" id="stat-total">0</div>
+                <div style="font-size: 0.9rem; color: var(--text-3);">إجمالي الأذكار</div>
             </div>
             <div>
-                <div style="font-size: 1.5rem; font-weight: bold;" id="stat-today">0</div>
-                <div style="font-size: 0.8rem; color: var(--text-3);">أذكار اليوم</div>
+                <div style="font-size: 1.8rem; font-weight: bold; font-family: 'JetBrains Mono';" class="gradient-text" id="stat-today">0</div>
+                <div style="font-size: 0.9rem; color: var(--text-3);">أذكار اليوم</div>
             </div>
         </div>
     </div>
@@ -367,7 +437,7 @@
 // ======================== DATA & SETTINGS ========================
 const AZKAR_DATA = {
     morning: [
-        { id:'m0', count:1, ref:"سورة البقرة: 255", virtue:"أجير من الجن حتى يمسى", text:"اللّهُ لاَ إِلَهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّومُ لاَ تَأْخُذُهُ سِنَةٌ وَلاَ نَوْمٌ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الأَرْضِ مَن ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلاَّ بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلاَ يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلاَّ بِمَا شَاء وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالأَرْضَ وَلاَ يَؤُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ" },
+        { id:'m0', count:1, ref:"سورة البقرة: 255", virtue:"أجير من الجن حتى يمسى", text:"اللّهُ لاَ إِلَهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّومُ لاَ تَأْخُذُهُ سِنَةٌ وَلاَ نَوْمٌ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الأَرْضِ مَن ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلاَّ بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلاَ يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلاَّ بِمَا شَاء وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالأَرْضَ وَلاَ يَؤُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ", translation: "Allah! There is no deity except Him, the Ever-Living, the Sustainer of [all] existence...", transliteration: "Allahu la ilaha illa Huwa, Al-Hayyul-Qayyum..." },
         { id:'m1', count:3, ref:"سورة الإخلاص", virtue:"تكفيك من كل شيء", text:"قُلۡ هُوَ ٱللَّهُ أَحَدٌ ﴿١﴾ ٱللَّهُ ٱلصَّمَدُ ﴿٢﴾ لَمۡ يَلِدۡ وَلَمۡ يُولَدۡ ﴿٣﴾ وَلَمۡ يَكُن لَّهُۥ كُفُوًا أَحَدُۢ ﴿٤﴾" },
         { id:'m2', count:3, ref:"سورة الفلق", virtue:"تكفيك من كل شيء", text:"قُلۡ أَعُوذُ بِرَبِّ ٱلۡفَلَقِ ﴿١﴾ مِن شَرِّ مَا خَلَقَ ﴿٢﴾ وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ ﴿٣﴾ وَمِن شَرِّ ٱلنَّفَّٰثَٰتِ فِي ٱلۡعُقَدِ ﴿٤﴾ وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ ﴿٥﴾" },
         { id:'m3', count:3, ref:"سورة الناس", virtue:"تكفيك من كل شيء", text:"قُلۡ أَعُوذُ بِرَبِّ ٱلنَّاسِ ﴿١﴾ مَلِكِ ٱلنَّاسِ ﴿٢﴾ إِلَٰهِ ٱلنَّاسِ ﴿٣﴾ مِن شَرِّ ٱلۡوَسۡوَاسِ ٱلۡخَنَّاسِ ﴿٤﴾ ٱلَّذِي يُوَسۡوِسُ فِي صُدُورِ ٱلنَّاسِ ﴿٥﴾ مِنَ ٱلۡجِنَّةِ وَٱلنَّاسِ ﴿٦﴾" },
@@ -502,7 +572,6 @@ function updateClock() {
     const timeOpts = { hour: '2-digit', minute: '2-digit', hour12: true };
     const dateOptsGregorian = { year: 'numeric', month: 'long', day: 'numeric' };
     
-    // -u-nu-latn ensures standard 1, 2, 3 digits are used while keeping Arabic words
     document.getElementById('time-display').textContent = now.toLocaleTimeString('ar-EG-u-nu-latn', timeOpts);
     
     const gregDate = now.toLocaleDateString('ar-EG-u-nu-latn', dateOptsGregorian);
@@ -559,7 +628,7 @@ function shareZikr(text, ref) {
         navigator.share(shareData).catch(console.error);
     } else {
         navigator.clipboard.writeText(shareData.text);
-        alert('تم نسخ الذكر للحافظة!');
+        showToast('تم نسخ الذكر للحافظة!');
     }
 }
 
@@ -567,14 +636,25 @@ function toggleFav(id) {
     if (favorites.has(id)) favorites.delete(id);
     else favorites.add(id);
     localStorage.setItem('azkar_favs', JSON.stringify([...favorites]));
-    renderAzkar(azkarCurrentCat); // refresh icon
+    renderAzkar(azkarCurrentCat); 
 }
 
-function doHaptic(type = 'light') {
+// Complex Haptics Logic
+function doHaptic(type = 'click') {
     if (!appSettings.enableHaptics || !navigator.vibrate) return;
     try {
-        if (type === 'light') navigator.vibrate(40); // 40ms is a solid tick for Android
-        if (type === 'heavy') navigator.vibrate([80, 40, 80]); // Distinct double-tick
+        if (type === 'click') {
+            // Light, sharp tap for simple decrements
+            navigator.vibrate(30); 
+        } 
+        else if (type === 'finish_one') {
+            // Distinct double-pulse for completing a single Zikr
+            navigator.vibrate([60, 50, 60]); 
+        } 
+        else if (type === 'finish_all') {
+            // Celebration pattern for completing all Azkar in category
+            navigator.vibrate([80, 50, 80, 50, 200, 50, 400]); 
+        }
     } catch (e) {}
 }
 
@@ -586,8 +666,8 @@ function showToast(message) {
     toast.innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg> <span>${message}</span>`;
     container.appendChild(toast);
     setTimeout(() => {
-        toast.style.animation = 'fadeOut 0.3s ease forwards';
-        setTimeout(() => toast.remove(), 300);
+        toast.style.animation = 'fadeOut 0.4s ease forwards';
+        setTimeout(() => toast.remove(), 400);
     }, 4000);
 }
 
@@ -627,7 +707,7 @@ function updateStatsUI() {
 
 // Data fetching
 function getAllAzkarFlat() {
-    return [...AZKAR_DATA.morning, ...AZKAR_DATA.evening, ...AZKAR_DATA.sleep];
+    return [...AZKAR_DATA.morning, ...AZKAR_DATA.evening, ...AZKAR_DATA.sleep, ...AZKAR_DATA.waking_up, ...AZKAR_DATA.after_prayer, ...AZKAR_DATA.travel];
 }
 
 function getZikrData(cat) {
@@ -701,7 +781,7 @@ function renderAzkar(cat) {
     list.innerHTML = '';
 
     if (!data.length) {
-        list.innerHTML = `<div style="text-align:center; padding:3rem; color:var(--text-3);">لا توجد أذكار هنا.</div>`;
+        list.innerHTML = `<div style="text-align:center; padding:3rem; color:var(--text-3); font-weight: bold;">لا توجد أذكار هنا.</div>`;
         return;
     }
 
@@ -712,6 +792,7 @@ function renderAzkar(cat) {
 
         const el = document.createElement('div');
         el.className = `azkar-item ${isDone?'done':''} ${isSkip?'skipped':''}`;
+        el.style.animationDelay = `${i * 0.05}s`; // Staggered entrance animation
         
         let displayText = appSettings.showTashkeel ? z.text : removeTashkeel(z.text);
         
@@ -722,7 +803,7 @@ function renderAzkar(cat) {
         let btnHTML = isDone || isSkip ? 
             `<button class="azkar-count-btn" onclick="undoZikr('${z.id}')">↩</button>` : 
             `<button class="azkar-skip-btn" onclick="skipZikr('${z.id}')">⏭</button>
-             <span style="font-family:'JetBrains Mono'; color:var(--text-3); min-width:30px; text-align:center;">${pVal}/${z.count}</span>
+             <span style="font-family:'JetBrains Mono'; color:var(--text-3); min-width:30px; text-align:center; font-weight: bold;">${pVal}/${z.count}</span>
              <button class="azkar-count-btn" onclick="tapZikr('${z.id}', ${pVal})">${pVal > 1 ? '×'+pVal : '✓'}</button>`;
 
         const isFav = favorites.has(z.id);
@@ -733,8 +814,8 @@ function renderAzkar(cat) {
             <div class="zikr-header-actions">
                 <span class="zikr-badge">${i+1}</span>
                 <div class="zikr-tools">
-                    <button class="tool-btn" onclick="shareZikr(\`${z.text}\`, \`${z.ref||''}\`)" title="مشاركة"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
-                    <button class="tool-btn" onclick="toggleFav('${z.id}')" title="مفضلة"><svg width="16" height="16" viewBox="0 0 24 24" fill="${starFill}" stroke="${starColor}" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+                    <button class="tool-btn" onclick="shareZikr(\`${z.text}\`, \`${z.ref||''}\`)" title="مشاركة"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
+                    <button class="tool-btn" onclick="toggleFav('${z.id}')" title="مفضلة"><svg width="18" height="18" viewBox="0 0 24 24" fill="${starFill}" stroke="${starColor}" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
                 </div>
             </div>
             <div class="azkar-text">${displayText.replace(/\n/g, '<br>')}</div>
@@ -751,21 +832,41 @@ function renderAzkar(cat) {
 
 // Interactions
 window.tapZikr = function(id, currentCount) {
-    doHaptic('light');
     let p = loadProgress(azkarCurrentCat);
     p[id] = Math.max(0, currentCount - 1);
     saveProgress(azkarCurrentCat, p);
     
+    // Evaluate Haptic Pattern BEFORE rendering UI
+    let data = getZikrData(azkarCurrentCat);
+    const newDoneCount = data.filter(z => p[z.id] === 0 || p[z.id] === 'skip').length;
+    
+    if (newDoneCount === data.length && data.length > 0 && azkarCurrentCat !== 'favorites') {
+        doHaptic('finish_all');
+    } else if (p[id] === 0) {
+        doHaptic('finish_one');
+    } else {
+        doHaptic('click');
+    }
+
     // Stats Update
     if (stats.todayDate !== new Date().toDateString()) { stats.todayDate = new Date().toDateString(); stats.todayCompleted = 0; }
     stats.totalCompleted++; stats.todayCompleted++; saveStats();
 
-    if (p[id] === 0) doHaptic('heavy');
     renderAzkar(azkarCurrentCat);
 };
 
 window.skipZikr = function(id) {
-    let p = loadProgress(azkarCurrentCat); p[id] = 'skip'; saveProgress(azkarCurrentCat, p); renderAzkar(azkarCurrentCat);
+    let p = loadProgress(azkarCurrentCat); p[id] = 'skip'; saveProgress(azkarCurrentCat, p); 
+    
+    let data = getZikrData(azkarCurrentCat);
+    const newDoneCount = data.filter(z => p[z.id] === 0 || p[z.id] === 'skip').length;
+    if (newDoneCount === data.length && data.length > 0) {
+        doHaptic('finish_all');
+    } else {
+        doHaptic('click');
+    }
+    
+    renderAzkar(azkarCurrentCat);
 };
 
 window.undoZikr = function(id) {
