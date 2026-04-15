@@ -91,7 +91,8 @@
             position: fixed; inset: 0; z-index: 9999;
             background: linear-gradient(135deg, #0A1128 0%, #121F3D 100%);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s;
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.4s;
+            cursor: pointer;
         }
         .splash-logo { width: 110px; height: 110px; margin-bottom: 2rem; animation: splashPulse 2s infinite ease-in-out; }
         .splash-title {
@@ -102,6 +103,10 @@
         .splash-subtitle {
             font-family: 'JetBrains Mono', monospace; color: #94A3B8; font-size: 1.1rem; letter-spacing: 4px;
             margin-top: 0.5rem; animation: splashFadeUp 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s forwards; opacity: 0;
+        }
+        .splash-skip-hint {
+            position: absolute; bottom: 40px; font-family: 'Noto Naskh Arabic', serif;
+            color: #94A3B8; font-size: 0.9rem; opacity: 0; animation: splashFadeUp 1s ease 1.5s forwards;
         }
         @keyframes splashPulse { 0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(245,158,11,0.2)); } 50% { transform: scale(1.08); filter: drop-shadow(0 0 25px rgba(245,158,11,0.6)); } }
         @keyframes splashFadeUp { 0% { opacity: 0; transform: translateY(30px); } 100% { opacity: 1; transform: translateY(0); } }
@@ -294,7 +299,7 @@
 <body data-tod="morning">
 
 <!-- Splash Screen overlay -->
-<div id="splash-screen" class="splash-screen">
+<div id="splash-screen" class="splash-screen" onclick="dismissSplash()">
     <svg class="splash-logo" viewBox="0 0 24 24" fill="none" stroke="url(#splash-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <defs>
             <linearGradient id="splash-grad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -306,6 +311,7 @@
     </svg>
     <div class="splash-title">حصن المسلم</div>
     <div class="splash-subtitle">AZKAR PRO</div>
+    <div class="splash-skip-hint">انقر للتخطي</div>
 </div>
 
 <!-- Dynamic Background Layers -->
@@ -342,7 +348,7 @@
 <!-- PRAYER TIME BAR -->
 <div class="prayer-bar" onclick="fetchPrayerTimes()" style="cursor:pointer;" title="تحديث مواقيت الصلاة">
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-    <span id="prayer-display">جاري تحديد الموقع...</span>
+    <span id="prayer-display">جاري جلب المواقيت...</span>
 </div>
 
 <div class="search-panel hidden" id="search-panel">
@@ -567,15 +573,17 @@ let favorites = new Set(JSON.parse(localStorage.getItem('azkar_favs')) || []);
 // ======================== APP LOGIC ========================
 
 // Splash Screen Logic
+function dismissSplash() {
+    const splash = document.getElementById('splash-screen');
+    if(splash) {
+        splash.style.opacity = '0';
+        splash.style.visibility = 'hidden';
+        setTimeout(() => splash.remove(), 600);
+    }
+}
+
 window.addEventListener('load', () => {
-    setTimeout(() => {
-        const splash = document.getElementById('splash-screen');
-        if(splash) {
-            splash.style.opacity = '0';
-            splash.style.visibility = 'hidden';
-            setTimeout(() => splash.remove(), 600);
-        }
-    }, 1800); 
+    setTimeout(dismissSplash, 1800); 
 });
 
 // Settings
@@ -597,7 +605,7 @@ function initSettingsUI() {
 }
 
 function updateFontSize(change) {
-    let fs = parseFloat(document.documentElement.style.getPropertyValue('--font-size-azkar')) || 1.2;
+    let fs = parseFloat(localStorage.getItem('mizan_font_size')) || 1.2;
     fs = Math.max(0.9, Math.min(2.5, fs + change));
     document.documentElement.style.setProperty('--font-size-azkar', fs + 'rem');
     localStorage.setItem('mizan_font_size', fs);
@@ -666,34 +674,14 @@ function calculateNextPrayer() {
 
 async function fetchPrayerTimes() {
     const display = document.getElementById('prayer-display');
-    display.innerHTML = 'جاري تحديد الموقع...';
-    
-    const fetchAPI = async (url) => {
-        try {
-            const res = await fetch(url);
-            const data = await res.json();
-            prayerTimes = data.data.timings;
-            calculateNextPrayer();
-        } catch(e) {
-            display.textContent = 'تعذر جلب المواقيت';
-        }
-    };
-
-    if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const lat = position.coords.latitude;
-                const lon = position.coords.longitude;
-                fetchAPI(`https://api.aladhan.com/v1/timings/${Math.floor(Date.now()/1000)}?latitude=${lat}&longitude=${lon}&method=4`);
-            },
-            (error) => {
-                // Denied or failed -> fallback to Mecca
-                fetchAPI(`https://api.aladhan.com/v1/timingsByCity?city=Mecca&country=SA&method=4`);
-            },
-            { timeout: 10000 }
-        );
-    } else {
-        fetchAPI(`https://api.aladhan.com/v1/timingsByCity?city=Mecca&country=SA&method=4`);
+    display.innerHTML = 'جاري جلب المواقيت...';
+    try {
+        const res = await fetch(`https://api.aladhan.com/v1/timingsByCity?city=Mecca&country=SA&method=4`);
+        const data = await res.json();
+        prayerTimes = data.data.timings;
+        calculateNextPrayer();
+    } catch(e) {
+        display.textContent = 'تعذر جلب المواقيت';
     }
 }
 
@@ -829,7 +817,7 @@ function switchTab(cat) {
 
     document.body.setAttribute('data-tod', bgType);
 
-    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    const isLight = document.body.getAttribute('data-theme') === 'light';
     updateThemeMeta(isLight, bgType);
 
     renderAzkar(cat);
@@ -991,10 +979,9 @@ function updateThemeMeta(isLight, tod) {
 }
 
 document.getElementById('theme-toggle').addEventListener('click', () => {
-    const html = document.documentElement;
-    const isLight = html.getAttribute('data-theme') !== 'light';
-    html.setAttribute('data-theme', isLight ? 'light' : 'dark');
-    localStorage.setItem('mizan_theme', html.getAttribute('data-theme'));
+    const isLight = document.body.getAttribute('data-theme') !== 'light';
+    document.body.setAttribute('data-theme', isLight ? 'light' : 'dark');
+    localStorage.setItem('mizan_theme', isLight ? 'light' : 'dark');
     
     document.getElementById('icon-sun').style.display = isLight ? 'none' : 'block';
     document.getElementById('icon-moon').style.display = isLight ? 'block' : 'none';
@@ -1007,21 +994,21 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
 document.addEventListener('DOMContentLoaded', () => {
     initSettingsUI();
     
-    let isLight = false;
     if (localStorage.getItem('mizan_theme') === 'light') {
-        isLight = true;
-        document.documentElement.setAttribute('data-theme', 'light');
+        document.body.setAttribute('data-theme', 'light');
         document.getElementById('icon-sun').style.display = 'none';
         document.getElementById('icon-moon').style.display = 'block';
+        updateThemeMeta(true, getCurrentTOD());
+    } else {
+        document.body.setAttribute('data-theme', 'dark');
+        updateThemeMeta(false, getCurrentTOD());
     }
 
     updateClock(); setInterval(updateClock, 60000);
     
-    // Automatically trigger Geolocation for Prayer Times on load
     fetchPrayerTimes();
 
-    const hr = new Date().getHours();
-    const initialTod = hr >= 4 && hr < 15 ? 'morning' : (hr >= 15 && hr < 20 ? 'evening' : 'sleep');
+    const initialTod = getCurrentTOD();
     switchTab(initialTod);
     
     // Trigger In-App Reminder on load if enabled
