@@ -91,10 +91,6 @@
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         .hidden { display: none !important; }
 
-        /* Global Animations */
-        @keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
-        @keyframes popIn { 0% { opacity: 0; transform: scale(0.9) translateY(10px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
-
         /* Background Effects - Crossfading Layers */
         .app-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0; transition: opacity 0.8s ease; }
         .bg-morning { background: radial-gradient(circle at 85% 10%, rgba(251, 191, 36, 0.20) 0%, transparent 50%), radial-gradient(circle at 15% 50%, rgba(56, 189, 248, 0.12) 0%, transparent 55%); }
@@ -109,10 +105,10 @@
         /* Universal Transitions for UI Elements */
         .top-bar, .bottom-nav, .prayer-bar, .card, .search-panel, .bottom-sheet, .menu-card, .azkar-item {
             background-color: var(--bg-2); border-color: var(--border);
-            transition: background-color 0.8s ease, border-color 0.8s ease, box-shadow 0.8s ease;
+            transition: background-color 0.4s ease, border-color 0.4s ease;
         }
         .gradient-text, .icon-btn, .azkar-text, .azkar-virtue, .nav-item, .tb-time, .tb-date, .zikr-badge, .sheet-handle {
-            transition: color 0.8s ease, background-color 0.8s ease;
+            transition: color 0.4s ease, background-color 0.4s ease;
         }
 
         /* Top Bar */
@@ -127,12 +123,20 @@
         .gradient-text {
             background: linear-gradient(135deg, var(--gold), var(--gold-light));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            background-size: 200% auto; animation: gradientShift 4s linear infinite;
         }
         
         .tb-time { font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; font-weight: 800; direction: ltr; line-height: 1.2; }
         .tb-date { font-family: 'Noto Naskh Arabic', serif; font-size: 0.75rem; color: var(--text-3); text-align: center; }
         
+        .prayer-bar {
+            position: fixed; top: calc(72px + var(--safe-top)); left: 0; right: 0; height: 36px; z-index: 98;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.85rem; color: var(--text); gap: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-bottom-width: 1px; border-bottom-style: solid;
+            background-color: var(--bg-2);
+        }
+        .prayer-live { color: var(--emerald); font-weight: bold; font-family: 'JetBrains Mono', monospace; }
+
         .icon-btn {
             background: transparent; border: 1px solid transparent; color: var(--text-3);
             display: flex; align-items: center; justify-content: center;
@@ -172,21 +176,21 @@
         /* Main Container & Cards */
         .container { position: relative; z-index: 10; max-width: 600px; margin: 0 auto; padding: calc(96px + var(--safe-top)) 1rem 100px 1rem; min-height: 100vh; }
         .card { border-radius: 16px; border-width: 1px; border-style: solid; box-shadow: 0 8px 30px rgba(0,0,0,0.15); margin-bottom: 2rem; }
-        .card-header { padding: 1.25rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; transition: border-color 0.8s ease;}
+        .card-header { padding: 1.25rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
         
-        .azkar-progress-pill { display: flex; align-items: center; gap: 0.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text-3); background-color: var(--bg-1); border: 1px solid var(--border); padding: 0.4rem 0.9rem; border-radius: 100px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); transition: background-color 0.8s, border-color 0.8s;}
-        .azkar-prog-bar { width: 70px; height: 8px; border-radius: 4px; background-color: var(--surface-2); overflow: hidden; transition: background-color 0.8s;}
-        .azkar-prog-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--emerald), var(--em-light), var(--emerald)); background-size: 200% 100%; animation: gradientShift 2s linear infinite; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .azkar-progress-pill { display: flex; align-items: center; gap: 0.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text-3); background-color: var(--bg-1); border: 1px solid var(--border); padding: 0.4rem 0.9rem; border-radius: 100px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
+        .azkar-prog-bar { width: 70px; height: 8px; border-radius: 4px; background-color: var(--surface-2); overflow: hidden; }
+        .azkar-prog-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--emerald), var(--em-light)); transition: width 0.3s ease; }
 
         /* Zikr Item Styles */
         .azkar-list-wrap { padding: 1rem; display: flex; flex-direction: column; gap: 1.2rem; }
         .azkar-item {
             background-color: var(--bg-1); border-width: 1px; border-style: solid;
             border-radius: 16px; padding: 1.25rem; position: relative; direction: rtl;
-            transition: background-color 0.8s ease, border-color 0.8s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); animation: popIn 0.4s ease forwards; opacity: 0;
+            transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
-        .azkar-item:hover { border-color: var(--gold); transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        .azkar-item:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
         
         .azkar-item.done { opacity: 0.6; transform: scale(0.98); border-color: var(--emerald); background-color: rgba(16,185,129,0.05); }
         .azkar-item.skipped { opacity: 0.4; border-style: dashed; transform: scale(0.98); }
@@ -208,11 +212,11 @@
         .azkar-actions { display: flex; align-items: center; gap: 0.8rem; }
         .azkar-count-btn {
             width: 64px; height: 64px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--gold), var(--gold-light)); background-size: 200% 200%; animation: gradientShift 3s ease infinite;
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
             border: none; color: #000; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
-            font-size: 1.6rem; font-weight: 700; cursor: pointer; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 1.6rem; font-weight: 700; cursor: pointer; transition: transform 0.1s;
         }
-        .azkar-count-btn:active { transform: scale(0.85); box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4); }
+        .azkar-count-btn:active { transform: scale(0.9); box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4); }
         .azkar-item.done .azkar-count-btn { background: linear-gradient(135deg, var(--emerald), var(--em-light)); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); color: #fff; }
         
         .azkar-skip-btn { width: 40px; height: 40px; border-radius: 50%; background-color: var(--surface); border: 1px solid var(--border); color: var(--text-3); cursor: pointer; transition: all 0.3s; }
@@ -253,12 +257,12 @@
         .streak-num { font-size: 4rem; font-weight: bold; line-height: 1; font-family: 'JetBrains Mono'; margin-bottom: 0.5rem; text-shadow: 0 4px 15px rgba(245, 158, 11, 0.3); }
         
         /* Completion Screen */
-        .azkar-completion { text-align: center; padding: 4rem 1rem; animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .azkar-completion { text-align: center; padding: 4rem 1rem; }
         .btn-primary { 
-            background: linear-gradient(135deg, var(--gold), var(--gold-light)); background-size: 200% 200%; animation: gradientShift 3s ease infinite;
-            color: #000; border: none; padding: 0.9rem 2.5rem; border-radius: 100px; font-weight: bold; font-family: inherit; cursor: pointer; font-size: 1.1rem; margin-top: 1.5rem; display: inline-flex; gap: 10px; align-items: center; box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3); transition: all 0.3s;
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
+            color: #000; border: none; padding: 0.9rem 2.5rem; border-radius: 100px; font-weight: bold; font-family: inherit; cursor: pointer; font-size: 1.1rem; margin-top: 1.5rem; display: inline-flex; gap: 10px; align-items: center; box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3); transition: all 0.2s;
         }
-        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(245, 158, 11, 0.4); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(245, 158, 11, 0.4); }
         .btn-primary:active { transform: translateY(0) scale(0.95); }
         
         /* Toast Notifications */
@@ -313,9 +317,14 @@
                 <h2 style="font-size:1.3rem;" class="gradient-text" id="cat-title-display">أذكار الصباح</h2>
                 <div class="card-sub" id="cat-sub-display">Morning Remembrance</div>
             </div>
-            <div class="azkar-progress-pill">
-                <span id="azkar-prog-done">0</span>/<span id="azkar-prog-total">0</span>
-                <div class="azkar-prog-bar"><div id="azkar-prog-fill" class="azkar-prog-fill"></div></div>
+            <div style="display: flex; align-items: center; gap: 0.8rem;">
+                <div class="azkar-progress-pill">
+                    <span id="azkar-prog-done">0</span>/<span id="azkar-prog-total">0</span>
+                    <div class="azkar-prog-bar"><div id="azkar-prog-fill" class="azkar-prog-fill"></div></div>
+                </div>
+                <button class="tool-btn" onclick="resetAzkar(azkarCurrentCat)" title="إعادة تعيين" style="width: 36px; height: 36px; color: var(--danger); border-color: var(--danger-light); background: transparent;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                </button>
             </div>
         </div>
 
@@ -520,6 +529,27 @@ let azkarCurrentCat = 'morning';
 let currentSearchQuery = '';
 let favorites = new Set(JSON.parse(localStorage.getItem('azkar_favs')) || []);
 
+// Scroll Memory
+let scrollTimeout;
+window.addEventListener('scroll', () => {
+    if (!document.getElementById('search-panel').classList.contains('hidden')) return; 
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+        localStorage.setItem('azkar_scroll_' + azkarCurrentCat, window.scrollY);
+    }, 100);
+}, { passive: true });
+
+// Auto-reset old progress from previous days
+function cleanupOldProgress() {
+    const todayStr = new Date().toDateString();
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('progress_') && !key.endsWith(todayStr)) {
+            localStorage.removeItem(key);
+        }
+    }
+}
+
 // ======================== APP LOGIC ========================
 
 // Settings
@@ -715,7 +745,16 @@ function switchTab(cat) {
     updateThemeMeta(isLight, bgType);
 
     renderAzkar(cat);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // Restore saved scroll position
+    setTimeout(() => {
+        const savedScroll = localStorage.getItem('azkar_scroll_' + cat);
+        if (savedScroll) {
+            window.scrollTo({ top: parseInt(savedScroll), behavior: 'auto' });
+        } else {
+            window.scrollTo({ top: 0, behavior: 'auto' });
+        }
+    }, 50);
 }
 
 function loadProgress(cat) {
@@ -764,7 +803,6 @@ function renderAzkar(cat) {
 
         const el = document.createElement('div');
         el.className = `azkar-item ${isDone?'done':''} ${isSkip?'skipped':''}`;
-        el.style.animationDelay = `${i * 0.05}s`; // Staggered entrance animation
         
         let displayText = appSettings.showTashkeel ? z.text : removeTashkeel(z.text);
         
@@ -874,7 +912,12 @@ window.undoZikr = function(id) {
 };
 
 window.resetAzkar = function(cat) {
-    localStorage.removeItem(`progress_${cat}_${new Date().toDateString()}`); renderAzkar(cat);
+    if(confirm('هل أنت متأكد من إعادة تعيين جميع أذكار هذا القسم؟')) {
+        localStorage.removeItem(`progress_${cat}_${new Date().toDateString()}`); 
+        localStorage.removeItem('azkar_scroll_' + cat);
+        renderAzkar(cat);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 };
 
 // Search
@@ -926,6 +969,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateThemeMeta(false, getCurrentTOD());
     }
 
+    cleanupOldProgress();
     updateClock(); setInterval(updateClock, 60000);
     
     const initialTod = getCurrentTOD();
