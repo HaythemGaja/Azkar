@@ -91,31 +91,6 @@
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         .hidden { display: none !important; }
 
-        /* Splash Screen */
-        .splash-screen {
-            position: fixed; inset: 0; z-index: 9999;
-            background: linear-gradient(135deg, #0A1128 0%, #121F3D 100%);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.4s;
-            cursor: pointer;
-        }
-        .splash-logo { width: 110px; height: 110px; margin-bottom: 2rem; animation: splashPulse 2s infinite ease-in-out; }
-        .splash-title {
-            font-family: 'Noto Naskh Arabic', serif; font-size: 2.8rem; font-weight: 700;
-            background: linear-gradient(135deg, #F59E0B, #FDE047); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            animation: splashFadeUp 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; opacity: 0;
-        }
-        .splash-subtitle {
-            font-family: 'JetBrains Mono', monospace; color: #94A3B8; font-size: 1.1rem; letter-spacing: 4px;
-            margin-top: 0.5rem; animation: splashFadeUp 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s forwards; opacity: 0;
-        }
-        .splash-skip-hint {
-            position: absolute; bottom: 40px; font-family: 'Noto Naskh Arabic', serif;
-            color: #94A3B8; font-size: 0.9rem; opacity: 0; animation: splashFadeUp 1s ease 1.5s forwards;
-        }
-        @keyframes splashPulse { 0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(245,158,11,0.2)); } 50% { transform: scale(1.08); filter: drop-shadow(0 0 25px rgba(245,158,11,0.6)); } }
-        @keyframes splashFadeUp { 0% { opacity: 0; transform: translateY(30px); } 100% { opacity: 1; transform: translateY(0); } }
-
         /* Global Animations */
         @keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
         @keyframes popIn { 0% { opacity: 0; transform: scale(0.9) translateY(10px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
@@ -294,22 +269,6 @@
     </style>
 </head>
 <body data-tod="morning">
-
-<!-- Splash Screen overlay -->
-<div id="splash-screen" class="splash-screen" onclick="dismissSplash()">
-    <svg class="splash-logo" viewBox="0 0 24 24" fill="none" stroke="url(#splash-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <defs>
-            <linearGradient id="splash-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#FDE047" />
-                <stop offset="100%" stop-color="#F59E0B" />
-            </linearGradient>
-        </defs>
-        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-    </svg>
-    <div class="splash-title">حصن المسلم</div>
-    <div class="splash-subtitle">AZKAR PRO</div>
-    <div class="splash-skip-hint">انقر للتخطي</div>
-</div>
 
 <!-- Dynamic Background Layers -->
 <div class="app-bg bg-morning"></div>
@@ -496,8 +455,7 @@ const AZKAR_DATA = {
         { id:'m18', count:10, ref:"رواه الطبراني", virtue:"أدركته شفاعة النبي ﷺ", text:"اللَّهُمَّ صَلِّ وَسَلِّمْ وَبَارِكْ على نَبِيِّنَا مُحمَّد" },
         { id:'m19', count:100, ref:"رواه الترمذي", virtue:"حرز من الشيطان و100 حسنة", text:"لَا إلَه إلّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ" },
         { id:'m20', count:100, ref:"رواه مسلم", virtue:"حطت خطاياه", text:"سُبْحانَ اللهِ وَبِحَمْدِهِ" }
-        { id:'m21', count:100, ref:"", virtue:" ", text:"اللَّهُمَّ أَنْتَ رَبِّي لا إِلَهَ إِلا أَنْتَ ، عَلَيْكَ تَوَكَّلْتُ ، وَأَنْتَ رَبُّ الْعَرْشِ الْعَظِيمِ , مَا شَاءَ اللَّهُ كَانَ ، وَمَا لَمْ يَشَأْ لَمْ يَكُنْ ، وَلا حَوْلَ وَلا قُوَّةَ إِلا بِاللَّهِ الْعَلِيِّ الْعَظِيمِ , أَعْلَمُ أَنَّ اللَّهَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ ، وَأَنَّ اللَّهَ قَدْ أَحَاطَ بِكُلِّ شَيْءٍ عِلْمًا , اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ شَرِ  نَفْسِي ، وَمِنْ شَرِّ كُلِّ دَابَّةٍ أَنْتَ آخِذٌ بِنَاصِيَتِهَا ، إِنَّ رَبِّي عَلَى صِرَاطٍ مُسْتَقِيمٍ" }],
-    
+    ],
     evening: [
         { id:'e0', count:1, ref:"سورة البقرة: 255", virtue:"أجير من الجن حتى يصبح", text:"اللّهُ لاَ إِلَهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّومُ لاَ تَأْخُذُهُ سِنَةٌ وَلاَ نَوْمٌ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الأَرْضِ مَن ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلاَّ بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلاَ يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلاَّ بِمَا شَاء وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالأَرْضَ وَلاَ يَؤُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ" },
         { id:'e1', count:3, ref:"سورة الإخلاص", virtue:"تكفيك من كل شيء", text:"قُلۡ هُوَ ٱللَّهُ أَحَدٌ ﴿١﴾ ٱللَّهُ ٱلصَّمَدُ ﴿٢﴾ لَمۡ يَلِدۡ وَلَمۡ يُولَدۡ ﴿٣﴾ وَلَمۡ يَكُن لَّهُۥ كُفُوًا أَحَدُۢ ﴿٤﴾" },
@@ -563,20 +521,6 @@ let currentSearchQuery = '';
 let favorites = new Set(JSON.parse(localStorage.getItem('azkar_favs')) || []);
 
 // ======================== APP LOGIC ========================
-
-// Splash Screen Logic
-function dismissSplash() {
-    const splash = document.getElementById('splash-screen');
-    if(splash) {
-        splash.style.opacity = '0';
-        splash.style.visibility = 'hidden';
-        setTimeout(() => splash.remove(), 600);
-    }
-}
-
-window.addEventListener('load', () => {
-    setTimeout(dismissSplash, 1800); 
-});
 
 // Settings
 function toggleSetting(key, value) {
@@ -969,7 +913,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     showToast(`لا تنسَ قراءة أذكار ${categoryNames[azkarCurrentCat]}! 🕌`);
                 }
             }
-        }, 2000); // Trigger after splash finishes
+        }, 500); // Trigger shortly after load
     }
 });
 
