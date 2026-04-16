@@ -772,11 +772,23 @@ function renderAzkar(cat) {
         if (appSettings.showTranslation && z.translation) extraHTML += `<div class="azkar-translation">${z.translation}</div>`;
         if (appSettings.showTranslation && z.transliteration) extraHTML += `<div class="azkar-transliteration">${z.transliteration}</div>`;
 
-        let btnHTML = isDone || isSkip ? 
-            `<button class="azkar-count-btn" onclick="undoZikr('${z.id}')">↩</button>` : 
-            `<button class="azkar-skip-btn" onclick="skipZikr('${z.id}')">⏭</button>
+        let btnHTML = '';
+        let resetBtnRight = '';
+        
+        if (isDone || isSkip) {
+            // Lock the action buttons into a completed visual state
+            btnHTML = isDone ? 
+                `<button class="azkar-count-btn" style="cursor: default; transform: none;" disabled>✓</button>` :
+                `<button class="azkar-skip-btn" style="cursor: default; transform: none;" disabled>⏭</button>`;
+            
+            // Generate the new Reset button on the right
+            resetBtnRight = `<button class="tool-btn" style="width: auto; padding: 0 16px; margin-left: 10px; color: var(--gold); border-color: var(--gold); font-family: 'Noto Naskh Arabic', serif; font-weight: bold;" onclick="undoZikr('${z.id}')">↺ إعادة</button>`;
+        } else {
+            // Standard action buttons
+            btnHTML = `<button class="azkar-skip-btn" onclick="skipZikr('${z.id}')">⏭</button>
              <span style="font-family:'JetBrains Mono'; color:var(--text-3); min-width:30px; text-align:center; font-weight: bold;">${pVal}/${z.count}</span>
              <button class="azkar-count-btn" onclick="tapZikr('${z.id}', ${pVal})">${pVal > 1 ? '×'+pVal : '✓'}</button>`;
+        }
 
         const isFav = favorites.has(z.id);
         const starColor = isFav ? 'var(--gold)' : 'currentColor';
@@ -794,6 +806,7 @@ function renderAzkar(cat) {
             ${extraHTML}
             ${z.ref ? `<div class="azkar-ref">${z.ref}</div>` : ''}
             <div class="azkar-bottom">
+                ${resetBtnRight}
                 <div class="azkar-virtue">${z.virtue || ''}</div>
                 <div class="azkar-actions">${btnHTML}</div>
             </div>
@@ -803,6 +816,19 @@ function renderAzkar(cat) {
 }
 
 // Interactions
+
+// Helper function to auto-scroll down to the next unread item
+function scrollToNextUnfinished() {
+    setTimeout(() => {
+        const next = document.querySelector('.azkar-item:not(.done):not(.skipped)');
+        if (next) {
+            // Calculate height accommodating the fixed top bar and padding
+            const y = next.getBoundingClientRect().top + window.scrollY - 160; 
+            window.scrollTo({top: y, behavior: 'smooth'});
+        }
+    }, 150); // slight delay to allow the CSS animations to settle
+}
+
 window.tapZikr = function(id, currentCount) {
     let p = loadProgress(azkarCurrentCat);
     p[id] = Math.max(0, currentCount - 1);
@@ -816,6 +842,7 @@ window.tapZikr = function(id, currentCount) {
         doHaptic('finish_all');
     } else if (p[id] === 0) {
         doHaptic('finish_one');
+        scrollToNextUnfinished();
     } else {
         doHaptic('click');
     }
@@ -836,6 +863,7 @@ window.skipZikr = function(id) {
         doHaptic('finish_all');
     } else {
         doHaptic('click');
+        scrollToNextUnfinished();
     }
     
     renderAzkar(azkarCurrentCat);
