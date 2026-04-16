@@ -117,16 +117,20 @@
             display: flex; align-items: center; justify-content: space-between; padding: var(--safe-top) 1rem 0 1rem;
             box-shadow: 0 4px 15px rgba(0,0,0,0.15); border-bottom-width: 1px; border-bottom-style: solid;
         }
-        .tb-actions { display: flex; align-items: center; gap: 0.4rem; }
-        .tb-center { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 60%; }
+        .tb-actions { display: flex; align-items: center; gap: 0.4rem; flex-shrink: 0; }
+        .tb-actions-end { display: flex; align-items: center; justify-content: flex-end; flex-shrink: 0; }
+        .tb-center { 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            flex: 1; min-width: 0; padding: 0 0.5rem; overflow: hidden;
+        }
         
         .gradient-text {
             background: linear-gradient(135deg, var(--gold), var(--gold-light));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
         
-        .tb-time { font-family: 'JetBrains Mono', monospace; font-size: 1.3rem; font-weight: 800; direction: ltr; line-height: 1.2; }
-        .tb-date { font-family: 'Noto Naskh Arabic', serif; font-size: 0.75rem; color: var(--text-3); text-align: center; }
+        .tb-time { font-family: 'JetBrains Mono', monospace; font-size: clamp(1.1rem, 4vw, 1.3rem); font-weight: 800; direction: ltr; line-height: 1.2; white-space: nowrap; }
+        .tb-date { font-family: 'Noto Naskh Arabic', serif; font-size: clamp(0.65rem, 2.5vw, 0.75rem); color: var(--text-3); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
         
         .prayer-bar {
             position: fixed; top: calc(72px + var(--safe-top)); left: 0; right: 0; height: 36px; z-index: 98;
@@ -176,7 +180,7 @@
         /* Main Container & Cards */
         .container { position: relative; z-index: 10; max-width: 600px; margin: 0 auto; padding: calc(96px + var(--safe-top)) 1rem 100px 1rem; min-height: 100vh; }
         .card { border-radius: 16px; border-width: 1px; border-style: solid; box-shadow: 0 8px 30px rgba(0,0,0,0.15); margin-bottom: 2rem; }
-        .card-header { padding: 1.25rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .card-header { padding: 1.25rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; transition: border-color 0.8s ease;}
         
         .azkar-progress-pill { display: flex; align-items: center; gap: 0.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text-3); background-color: var(--bg-1); border: 1px solid var(--border); padding: 0.4rem 0.9rem; border-radius: 100px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
         .azkar-prog-bar { width: 70px; height: 8px; border-radius: 4px; background-color: var(--surface-2); overflow: hidden; }
@@ -205,9 +209,9 @@
         .azkar-translation { font-family: -apple-system, sans-serif; font-size: 0.9rem; color: var(--text-3); direction: ltr; text-align: left; margin-bottom: 0.5rem; padding-left: 12px; border-left: 3px solid var(--gold); border-radius: 2px; transition: border-color 0.8s ease, color 0.8s ease;}
         .azkar-transliteration { font-family: 'Crimson Pro', serif; font-size: 0.95rem; color: var(--gold-light); direction: ltr; text-align: left; margin-bottom: 0.8rem; font-style: italic; opacity: 0.8; transition: color 0.8s ease;}
         .azkar-ref { font-size: 0.8rem; color: var(--text-3); background-color: var(--surface-2); display: inline-block; padding: 0.3rem 0.8rem; border-radius: 6px; margin-bottom: 0.8rem; border: 1px solid var(--border); transition: background-color 0.8s, border-color 0.8s, color 0.8s; }
+        .azkar-virtue { font-size: 0.85rem; color: var(--gold); line-height: 1.6; margin-bottom: 0.8rem; display: block; }
         
         .azkar-bottom { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; margin-top: 0.5rem; border-top: 1px solid var(--border); padding-top: 1rem; transition: border-color 0.8s;}
-        .azkar-virtue { font-size: 0.85rem; color: var(--gold); flex: 1; line-height: 1.6; }
         
         .azkar-actions { display: flex; align-items: center; gap: 0.8rem; }
         .azkar-count-btn {
@@ -270,6 +274,16 @@
         .toast { background-color: var(--surface); color: var(--text); border: 1px solid var(--gold); border-left: 4px solid var(--gold); padding: 14px 20px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.4); font-family: 'Noto Naskh Arabic', serif; display: flex; align-items: center; gap: 12px; animation: slideDown 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; direction: rtl; transition: background-color 0.8s ease;}
         @keyframes slideDown { from { opacity: 0; transform: translateY(-20px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
         @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px) scale(0.95); } }
+
+        /* Small Mobile Adjustments */
+        @media (max-width: 380px) {
+            .azkar-count-btn { width: 54px; height: 54px; font-size: 1.4rem; }
+            .azkar-skip-btn { width: 36px; height: 36px; }
+            .icon-btn { width: 36px; height: 36px; }
+            .nav-item span { font-size: 0.7rem; }
+            .nav-item svg { width: 20px; height: 20px; }
+            .azkar-item { padding: 1rem; }
+        }
     </style>
 </head>
 <body data-tod="morning">
@@ -317,7 +331,7 @@
                 <h2 style="font-size:1.3rem;" class="gradient-text" id="cat-title-display">أذكار الصباح</h2>
                 <div class="card-sub" id="cat-sub-display">Morning Remembrance</div>
             </div>
-            <div style="display: flex; align-items: center; gap: 0.8rem;">
+            <div style="display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
                 <div class="azkar-progress-pill">
                     <span id="azkar-prog-done">0</span>/<span id="azkar-prog-total">0</span>
                     <div class="azkar-prog-bar"><div id="azkar-prog-fill" class="azkar-prog-fill"></div></div>
@@ -820,7 +834,7 @@ function renderAzkar(cat) {
                 `<button class="azkar-skip-btn" style="cursor: default; transform: none;" disabled>⏭</button>`;
             
             // Generate the new Reset button on the right
-            resetBtnRight = `<button class="tool-btn" style="width: auto; padding: 0 16px; margin-left: 10px; color: var(--gold); border-color: var(--gold); font-family: 'Noto Naskh Arabic', serif; font-weight: bold;" onclick="undoZikr('${z.id}')">↺ إعادة</button>`;
+            resetBtnRight = `<button class="tool-btn" style="width: auto; padding: 0 16px; color: var(--gold); border-color: var(--gold); font-family: 'Noto Naskh Arabic', serif; font-weight: bold;" onclick="undoZikr('${z.id}')">↺ إعادة</button>`;
         } else {
             // Standard action buttons
             btnHTML = `<button class="azkar-skip-btn" onclick="skipZikr('${z.id}')">⏭</button>
@@ -843,9 +857,9 @@ function renderAzkar(cat) {
             <div class="azkar-text">${displayText.replace(/\n/g, '<br>')}</div>
             ${extraHTML}
             ${z.ref ? `<div class="azkar-ref">${z.ref}</div>` : ''}
+            ${z.virtue ? `<div class="azkar-virtue">${z.virtue}</div>` : ''}
             <div class="azkar-bottom">
-                ${resetBtnRight}
-                <div class="azkar-virtue">${z.virtue || ''}</div>
+                <div class="azkar-reset-wrapper">${resetBtnRight}</div>
                 <div class="azkar-actions">${btnHTML}</div>
             </div>
         `;
